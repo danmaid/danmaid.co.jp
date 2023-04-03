@@ -1,0 +1,22 @@
+name: Sync S3
+on:
+  push:
+    branches:
+      - main
+permissions:
+  id-token: write
+  contents: read
+jobs:
+  S3Upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git clone the repository
+        uses: actions/checkout@v3
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::578230542045:role/github-s3-sync-danmaid.co.jp
+          aws-region: ap-northeast-1
+      - name: Sync
+        run: |
+          aws s3 sync ./dist/ s3://danmaid.co.jp/ --delete
